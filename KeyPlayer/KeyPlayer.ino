@@ -3,6 +3,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
+#include <Keypad.h>
 
 AudioPlaySdWav           playWav1;
 AudioOutputUSB           audioOutput; // must set Tools > USB Type to Audio
@@ -30,7 +31,7 @@ void setup() {
 
   // Audio connections require memory to work.  For more
   // detailed information, see the MemoryAndCpuUsage example
-  AudioMemory(400);
+  AudioMemory(100);
 
   SPI.setMOSI(SDCARD_MOSI_PIN);
   SPI.setSCK(SDCARD_SCK_PIN);
@@ -63,12 +64,78 @@ void playFile(const char *filename)
 
 
 int filePlay = 0;
+const byte ROWS = 4; //four rows
+const byte COLS = 3; //three columns
+char keys[ROWS][COLS] = {
+  {'1', '2', '3'},
+  {'4', '5', '6'},
+  {'7', '8', '9'},
+  {'*', '0', '#'}
+};
+byte rowPins[ROWS] = {7, 12, 11, 9}; //connect to the row pinouts of the keypad
+byte colPins[COLS] = {8, 6, 10}; //connect to the column pinouts of the keypad
+
+Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
 void loop() {
-  playSDWAV(random(1, audnum ));
-  delay(5);
-}
+  char key = keypad.getKey();
 
+  if (key != NO_KEY) {
+
+    switch (key) {
+      case '1':
+        playFile("BA_LATER.WAV");
+        break;
+      case '2':
+        playFile("C1A0_B~1.WAV");
+        break;
+
+      case '3':
+        playFile("C1A1_B~1.WAV");
+        break;
+      case '4':
+        playFile("C2A3_B~1.WAV");
+        break;
+
+      case '5':
+        playFile("NODRILL.WAV");
+        break;
+
+      case '6':
+        playFile("C2A1_B~3.WAV");
+        break;
+
+      case '7':
+        playFile("GUYRES~1.WAV");
+        break;
+
+      case '8':
+        playFile("C1A0_B~2.WAV");
+        break;
+
+      case '9':
+        playFile("DIEBLO~1.WAV");
+        break;
+
+      case '0':
+        playFile("CUSTOM.WAV");
+        break;
+
+      case '#':
+        playSDWAV(random(1, audnum ));
+        delay(5);
+        break;
+
+      case '*':
+        playFile("C2DD42~1.WAV");
+        break;
+
+      default:
+        break;
+    }
+
+  }
+}
 
 void countWAV() {
   //Counts the number of appropriate JPEG files found.
